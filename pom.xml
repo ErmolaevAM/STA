@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>NetCrackerProject</groupId>
+    <artifactId>NCProject</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>DBConnection</module>
+        <module>WebInterface</module>
+        <module>Main</module>
+    </modules>
+
+    <dependencies>
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/postgresql/postgresql &ndash;&gt;
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.4.1208-jdbc42-atlassian-hosted</version>
+        </dependency>
+
+&lt;!&ndash;
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>4.2.1.Final</version>
+        </dependency>&ndash;&gt;
+
+        <dependency>
+            <groupId>NetCrackerProject</groupId>
+            <artifactId>DataBaseConnection</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework/spring-jdbc &ndash;&gt;
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>5.0.0.M3</version>
+        </dependency>-->
+
+
+        <dependency>
+            <groupId>NetCrackerProject</groupId>
+            <artifactId>DataBaseConnection</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>4.2.5.RELEASE</version>
+        </dependency>
+
+
+    </dependencies>
+
+
+</project>
