@@ -30,7 +30,7 @@
 
                 <tr>
                     <td colspan='2'>
-                        <input name="Enter" type="button" value="Enter" />
+                        <input name="Enter" type="submit" value="Enter" />
                     </td>
                 </tr>
 

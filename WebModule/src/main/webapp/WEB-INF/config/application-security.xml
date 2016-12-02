@@ -7,9 +7,8 @@
 	http://www.springframework.org/schema/security/spring-security-4.1.xsd">
 
     <http auto-config="true">
-        <intercept-url pattern="/home/**" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/search/**" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/load/**" access="hasRole('ROLE_MODER')" />
+        <intercept-url pattern="/hello/**" access="hasRole('ROLE_USER')" />
+
         <form-login login-page="/login"
                     username-parameter="j_username"
                     password-parameter="j_password"
@@ -17,7 +16,7 @@
                     default-target-url="/hello"
                     authentication-failure-url="/loginfailed"
         />
-        <logout logout-success-url="/login?logout" />
+        <logout logout-success-url="/login" logout-url="/logout" />
         <csrf/>
     </http>
 
