@@ -12,4 +12,5 @@ public interface DBConnection {
     List<Apps> getAllApplications();
 
     List<StackTrace> getAllStackTraces();
+
 }

@@ -1,3 +1,5 @@
+<%@ page import="org.springframework.security.core.userdetails.User" %>
+<%@ page import="org.springframework.security.core.context.SecurityContextHolder" %>
 <%@ taglib prefix="c" uri="http://www.springframework.org/tags" %>
 <%--
   Created by IntelliJ IDEA.
@@ -12,8 +14,9 @@
     <title>Hello world</title>
 </head>
 <body>
-    <h1>Message: ${message}</h1>
+    <h1>Message: Hello world</h1>
 
     <a href="<c:url value="/logout" />"><button>Logout</button></a>
+
 </body>
 </html>

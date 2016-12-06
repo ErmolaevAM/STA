@@ -19,6 +19,7 @@ public class LoginController {
 
     @RequestMapping(value = {"/", "/login", "/loginfailed"}, method = RequestMethod.GET)
     public String login() {
+
         return "login";
     }
 
