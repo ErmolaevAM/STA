@@ -1,5 +1,7 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -11,17 +13,44 @@ public class StackTrace {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "st_id")
+    @JsonProperty("StacjTrace ID")
     private int stackTraceId;
 
     @Column(name = "st_title")
+    @JsonProperty("StackTrace title")
     private String stackTraceTitle;
 
     @Column(name = "st")
+    @JsonProperty("StackTrace")
     private String stackTrace;
 
-    @ManyToMany(mappedBy = "stackTraces", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "stackTraces", fetch = FetchType.LAZY)
+    @JsonProperty("Applications list")
     private List<Apps> apps;
 
+    @Transient
+    @JsonProperty("App list")
+    private List<Integer> appsList;
+
+    @Transient
+    @JsonProperty("Ranked coeff")
+    private int rankedCoeff = 0;
+
+    public int getRankedCoeff() {
+        return rankedCoeff;
+    }
+
+    public void setRankedCoeff(int rankedCoeff) {
+        this.rankedCoeff = rankedCoeff;
+    }
+
+    public List<Integer> getAppsList() {
+        return appsList;
+    }
+
+    public void setAppsList(List<Integer> appsList) {
+        this.appsList = appsList;
+    }
 
     public  StackTrace(int id, String title, String stackTrace){
         this.stackTraceId = id;

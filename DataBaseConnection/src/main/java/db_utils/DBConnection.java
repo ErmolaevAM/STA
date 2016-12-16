@@ -1,8 +1,10 @@
 package db_utils;
 
 import entities.Apps;
+import entities.Pair;
 import entities.StackTrace;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -13,4 +15,5 @@ public interface DBConnection {
 
     List<StackTrace> getAllStackTraces();
 
+    List<Pair> getAllPairs();
 }
