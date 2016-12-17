@@ -1,9 +1,0 @@
-INSERT INTO public.apps (app_id, app_name) VALUES (1, 'samsung');
-INSERT INTO public.apps (app_id, app_name) VALUES (2, 'nokia');
-INSERT INTO public.apps (app_id, app_name) VALUES (3, 'iphone');
-INSERT INTO public.apps (app_id, app_name) VALUES (4, 'alcatel');
-INSERT INTO public.apps (app_id, app_name) VALUES (5, 'motorolla');
-INSERT INTO public.apps (app_id, app_name) VALUES (6, 'huawei');
-INSERT INTO public.apps (app_id, app_name) VALUES (7, 'meizu');
-INSERT INTO public.apps (app_id, app_name) VALUES (8, 'sony');
-INSERT INTO public.apps (app_id, app_name) VALUES (9, 'siemens');
