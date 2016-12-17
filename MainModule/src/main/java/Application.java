@@ -4,6 +4,7 @@ import elasticsearch.ElasticsearchController;
 import entities.Apps;
 import entities.Pair;
 import entities.StackTrace;
+import jsonEntities.JsonApps;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -17,6 +18,8 @@ public class Application {
     public static void main(String[] args) {
         DBConnection db = new PostgresDBConnectionImpl();
 
+
+//нормально работает кусок 1
         List<Apps> appses = db.getAllApplications();
         System.out.println("Size appses = "+appses.size());
         for (int i=0;i<appses.size();i++){
@@ -34,16 +37,26 @@ public class Application {
         for (int i = 0; i < list.size(); i++) {
             System.out.println(list.get(i).getStackTraceId()+" "+list.get(i).getStackTraceTitle()+" "+list.get(i).getStackTrace());
         }
+//конец куска 1
 
+
+//кусок 2
         try {
-            ElasticsearchController esc = new ElasticsearchController();
+            ElasticsearchController esc = new ElasticsearchController(db);
             esc.postInfoToElastic();
+            List<JsonApps> lst = esc.getTopBrokenApps();
 
+            for (JsonApps item : lst){
+                System.out.println("ID: "+item.getAppId()+"; App name: "+item.getAppName()+"; ST list: "+item.getStackTraceId()+"; Rank coeff: "+item.getRankedCoeff());
+            }
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+//конец куска 2
+
+
 
 
     }

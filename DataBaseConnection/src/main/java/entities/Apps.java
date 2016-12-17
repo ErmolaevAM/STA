@@ -2,6 +2,7 @@ package entities;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,26 +15,26 @@ public class Apps {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "app_id")
-    @JsonProperty("Application ID")
+    @SerializedName("application_id")
     private int appId;
 
     @Column(name = "app_name")
-    @JsonProperty("Application name")
+    @SerializedName("application_name")
     private String appName;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinTable(name = "apps_reqs",
             joinColumns = @JoinColumn(name = "app_id", referencedColumnName = "app_id"),
             inverseJoinColumns = @JoinColumn(name = "st_id", referencedColumnName = "st_id"))
-    @JsonProperty("StackTrace list")
+    //@JsonProperty("StackTrace list")
     private List<StackTrace> stackTraces;
 
     @Transient
-    @JsonProperty("ST list")
+    @SerializedName("application_stacktrace")
     private List<Integer> stackTraceId;
 
     @Transient
-    @JsonProperty("Ranked coeff")
+    //@JsonProperty("Ranked coeff")
     private int rankedCoeff = 0;
 
     public int getRankedCoeff() {

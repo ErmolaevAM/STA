@@ -1,20 +1,20 @@
 package elasticsearch;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import db_utils.DBConnection;
 import db_utils.PostgresDBConnectionImpl;
 import entities.Apps;
-import entities.Pair;
 import entities.StackTrace;
-import org.elasticsearch.action.get.GetResponse;
+import jsonEntities.JsonApps;
+import jsonEntities.JsonStackTrace;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
@@ -37,57 +37,54 @@ public class ElasticsearchController {
 
     private DBConnection dataInf;
 
+    private Gson gson;
+
+    public ElasticsearchController(DBConnection dataInf) throws UnknownHostException {
+        this.settings = Settings.builder().put("cluster.name", "my-application").build();
+        this.transportClient = new PreBuiltTransportClient(settings);
+        this.client = transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
+        this.dataInf = dataInf;
+        this.gson = new GsonBuilder().create();
+    }
+
     public ElasticsearchController() throws UnknownHostException {
         this.settings = Settings.builder().put("cluster.name", "my-application").build();
         this.transportClient = new PreBuiltTransportClient(settings);
         this.client = transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
         this.dataInf = new PostgresDBConnectionImpl();
+        this.gson = new GsonBuilder().create();
     }
 
     public void postInfoToElastic() throws IOException {
         List<Apps> appsList = dataInf.getAllApplications();
         List<StackTrace> stackTraceList = dataInf.getAllStackTraces();
         IndexResponse response;
+        JsonApps app;
+        JsonStackTrace stackTrace;
 
-        /*for (int i = 0; i < appsList.size(); i++) {
-            List<Integer> stList = new ArrayList<>();
-            for (int j = 0; j < pairs.size(); j++) {
-                if (pairs.get(j).getFirst() == appsList.get(i).getAppId()){
-                    stList.add(pairs.get(j).getSecond());
-                }
-            }
-            appsList.get(i).setStackTraceId(stList);
+
+        for (int i = 0; i < appsList.size(); i++) {
+            app = new JsonApps(appsList.get(i));
+            response = client.prepareIndex("applications", "apps", String.valueOf(app.getAppId())).setSource(jsonBuilder().startObject()
+                    .field("application_id", app.getAppId())
+                    .field("application_name", app.getAppName())
+                    .field("application_stacktrace", app.getStackTraceId())
+                    .field("application_ranked_coeff", app.getRankedCoeff())
+                    .endObject())
+                    .get();
         }
 
         for (int i = 0; i < stackTraceList.size(); i++) {
-            List<Integer> appList = new ArrayList<>();
-            for (int j = 0; j < pairs.size(); j++) {
-                if (pairs.get(j).getSecond() == stackTraceList.get(i).getStackTraceId()){
-                    appList.add(pairs.get(j).getFirst());
-                }
-            }
-            stackTraceList.get(i).setAppsList(appList);
-        }*/
-
-        for (Apps item : appsList) {
-            response = client.prepareIndex("applications", "app", String.valueOf(item.getAppId())).setSource(jsonBuilder().startObject()
-                    .field("application_name", item.getAppName())
-                    .field("application_stacktrace", item.getStackTraces())
-                    .field("application_stacktrace_size", item.getStackTraces().size())
-                    .field("ranked_coeff", item.getRankedCoeff())
+            stackTrace = new JsonStackTrace(stackTraceList.get(i));
+            response = client.prepareIndex("stack_traces", "stack_trace", String.valueOf(stackTrace.getStackTraceId())).setSource(jsonBuilder().startObject()
+                    .field("stack_trace_id", stackTrace.getStackTraceId())
+                    .field("stack_trace_title", stackTrace.getStackTraceTitle())
+                    .field("stack_trace", stackTrace.getStackTrace())
+                    .field("stacktrace_applications", stackTrace.getAppsList())
+                    .field("stacktrace_ranked_coeff", stackTrace.getRankedCoeff())
                     .endObject())
                     .get();
-        }
 
-        for (StackTrace item : stackTraceList) {
-            response = client.prepareIndex("stack_traces", "stack_trace", String.valueOf(item.getStackTraceId())).setSource(jsonBuilder().startObject()
-                    .field("stack_trace_title", item.getStackTraceTitle())
-                    .field("stack_trace", item.getStackTrace())
-                    .field("stacktrace_applications", item.getApps())
-                    .field("stacktrace_applications_size", item.getApps().size())
-                    .field("ranked_coeff", item.getRankedCoeff())
-                    .endObject())
-                    .get();
         }
 
         System.out.println("Data posted.");
@@ -95,18 +92,79 @@ public class ElasticsearchController {
 
     }
 
-    public List<Apps> getTopFiveBrokenApps(){
-        List<Apps> topFive = new ArrayList<>();
-        //GetResponse response = client.prepareSearch("applications").setTypes("app").setQuery().setSize(5).get();
-        SearchResponse response = client.prepareSearch("applications").setTypes("app")
-                .addSort("ranked_coeff", SortOrder.ASC)
-                .setSize(5)
-                .get();
+    public List<JsonApps> getTopBrokenApps(){
+        List<JsonApps> top = new ArrayList<>();
 
+        SearchResponse response = client.prepareSearch("applications").setTypes("apps")
+                .addSort("application_ranked_coeff", SortOrder.DESC)
+                .execute()
+                .actionGet();
 
-        return topFive;
+        SearchHit[] hits = response.getHits().getHits();
+        for (SearchHit hit : hits) {
+            String str = hit.getSourceAsString();
+            if (str != null){
+                top.add(gson.fromJson(str, JsonApps.class));
+            }
+        }
+        return top;
     }
 
+    public List<JsonApps> getTopBrokenApps(int count){
+        List<JsonApps> top = new ArrayList<>();
+
+        SearchResponse response = client.prepareSearch("applications").setTypes("apps")
+                .addSort("application_ranked_coeff", SortOrder.DESC)
+                .setSize(count)
+                .execute()
+                .actionGet();
+
+        SearchHit[] hits = response.getHits().getHits();
+        for (SearchHit hit : hits) {
+            String str = hit.getSourceAsString();
+            if (str != null){
+                top.add(gson.fromJson(str, JsonApps.class));
+            }
+        }
+        return top;
+    }
+
+    public List<JsonStackTrace> getTopErrors(){
+        List<JsonStackTrace> top = new ArrayList<>();
+
+        SearchResponse response = client.prepareSearch("stack_traces").setTypes("stack_trace")
+                .addSort("stacktrace_ranked_coeff", SortOrder.DESC)
+                .execute()
+                .actionGet();
+
+        SearchHit[] hits = response.getHits().getHits();
+        for (SearchHit hit : hits) {
+            String str = hit.getSourceAsString();
+            if (str != null){
+                top.add(gson.fromJson(str, JsonStackTrace.class));
+            }
+        }
+        return top;
+    }
+
+    public List<JsonStackTrace> getTopErrors(int count){
+        List<JsonStackTrace> top = new ArrayList<>();
+
+        SearchResponse response = client.prepareSearch("stack_traces").setTypes("stack_trace")
+                .addSort("stacktrace_ranked_coeff", SortOrder.DESC)
+                .setSize(count)
+                .execute()
+                .actionGet();
+
+        SearchHit[] hits = response.getHits().getHits();
+        for (SearchHit hit : hits) {
+            String str = hit.getSourceAsString();
+            if (str != null){
+                top.add(gson.fromJson(str, JsonStackTrace.class));
+            }
+        }
+        return top;
+    }
 
 
 
