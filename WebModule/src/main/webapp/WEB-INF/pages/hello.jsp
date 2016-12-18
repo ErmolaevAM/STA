@@ -1,5 +1,7 @@
+
 <%@ taglib prefix="c" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%--
   Created by IntelliJ IDEA.
   User: Александр
@@ -34,8 +36,11 @@
             <td><a href="<c:url value="/topErrors"/>"><button>Get all errors</button></a></td>
         </sec:authorize>
 
-
-
+    </div>
+    <br>
+    <div>
+        <input type="text" id="kusok" size="50" placeholder="Enter part of stacktrace" required>
+        <td><a href="<c:url value="/searchResults"/>"><button>Search</button></a></td>
     </div>
 
 </body>
