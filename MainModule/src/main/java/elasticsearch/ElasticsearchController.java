@@ -8,12 +8,15 @@ import entities.Apps;
 import entities.StackTrace;
 import jsonEntities.JsonApps;
 import jsonEntities.JsonStackTrace;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
@@ -166,7 +169,54 @@ public class ElasticsearchController {
         return top;
     }
 
+    public List<JsonApps> getAppByStacktraceSubstring(String substring){
+        List<JsonApps> returnList = new ArrayList<>();
+        List<JsonStackTrace> jstList = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        SearchResponse response;
 
+        response = client.prepareSearch("stack_traces").setTypes("stack_trace")
+                .setQuery(QueryBuilders.wildcardQuery("stack_trace", "*"+substring+"*"))
+                .execute()
+                .actionGet();
+
+        SearchHit[] hits = response.getHits().getHits();
+        for (SearchHit hit : hits) {
+            String str = hit.getSourceAsString();
+            if ( str != null){
+                //System.out.println(str); check result
+                jstList.add(gson.fromJson(str, JsonStackTrace.class));
+            }
+        }
+
+        for (JsonStackTrace item : jstList) {
+            for (Integer index : item.getAppsList()) {
+                if (!list.contains(index)){
+                    //System.out.println("index to added = "+ index); check result
+                    list.add(index);
+                }
+            }
+        }
+
+        for (Integer index : list) {
+            response = client.prepareSearch("applications").setTypes("apps")
+                    .setQuery(QueryBuilders.termQuery("application_id", index))
+                    .execute()
+                    .actionGet();
+            //System.out.println("mark1"); check result
+            SearchHit[] result = response.getHits().getHits();
+            for (SearchHit hit : result) {
+                String str = hit.getSourceAsString();
+                if(str != null){
+                    //System.out.println(str); check result
+                    returnList.add(gson.fromJson(str, JsonApps.class));
+                }
+            }
+
+        }
+
+        return returnList;
+    }
 
 
 

@@ -44,11 +44,11 @@ public class Application {
         try {
             ElasticsearchController esc = new ElasticsearchController(db);
             esc.postInfoToElastic();
-            List<JsonApps> lst = esc.getTopBrokenApps();
+            List<JsonApps> lst = esc.getAppByStacktraceSubstring("or1");
 
-            for (JsonApps item : lst){
+            /*for (JsonApps item : lst){
                 System.out.println("ID: "+item.getAppId()+"; App name: "+item.getAppName()+"; ST list: "+item.getStackTraceId()+"; Rank coeff: "+item.getRankedCoeff());
-            }
+            }*/
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {

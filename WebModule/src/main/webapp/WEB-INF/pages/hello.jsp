@@ -34,6 +34,8 @@
             <td><a href="<c:url value="/topErrors"/>"><button>Get all errors</button></a></td>
         </sec:authorize>
 
+
+
     </div>
 
 </body>
