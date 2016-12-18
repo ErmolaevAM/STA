@@ -1,7 +1,5 @@
-
 <%@ taglib prefix="c" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%--
   Created by IntelliJ IDEA.
   User: Александр
@@ -12,7 +10,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Hello world</title>
+    <title>Welcome</title>
 </head>
 <body>
     <h1>Welcome page</h1>
@@ -38,10 +36,12 @@
 
     </div>
     <br>
-    <div>
-        <input type="text" id="kusok" size="50" placeholder="Enter part of stacktrace" required>
-        <td><a href="<c:url value="/searchResults"/>"><button>Search</button></a></td>
-    </div>
+    <form name='f' action="/searchResults" method="post">
+        <input name="searchSubstring" id="searchSubstring" type="text" size="50" placeholder="Enter part of stacktrace"/>
+        <%--<td><a href="<c:url value="/searchResults"/>"><button>Search</button></a></td>--%>
+        <input type="submit" value="Search"/>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+    </form>
 
 </body>
 </html>

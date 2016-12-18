@@ -12,6 +12,7 @@
         <intercept-url pattern="/topApps/**" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/topFiveErrors/**" access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" />
         <intercept-url pattern="/topErrors/**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/searchResults/**" access="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')" />
 
         <form-login login-page="/login"
                     username-parameter="j_username"

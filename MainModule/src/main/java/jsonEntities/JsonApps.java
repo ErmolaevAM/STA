@@ -3,8 +3,10 @@ package jsonEntities;
 import com.google.gson.annotations.SerializedName;
 import entities.Apps;
 import entities.StackTrace;
+import org.springframework.util.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +22,17 @@ public class JsonApps {
     @SerializedName("application_stacktrace")
     private List<Integer> stackTraceId;
 
+    @SerializedName("app_sts")
+    private List<String> stackTraces;
+
+    public List<String> getStackTraces() {
+        return stackTraces;
+    }
+
+    public void addStackTrace(String stackTrace) {
+        this.stackTraces.add(stackTrace);
+    }
+
     @SerializedName("application_ranked_coeff")
     private int rankedCoeff = 0;
 
@@ -28,6 +41,7 @@ public class JsonApps {
         this.appName = app.getAppName();
         this.stackTraceId = app.getStackTraceId();
         this.rankedCoeff = app.getRankedCoeff();
+        this.stackTraces = new ArrayList<>();
     }
 
     public int getAppId() {

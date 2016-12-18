@@ -56,22 +56,36 @@ public class ElasticsearchController {
         this.client = transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
         this.dataInf = new PostgresDBConnectionImpl();
         this.gson = new GsonBuilder().create();
+        try {
+            postInfoToElastic();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void postInfoToElastic() throws IOException {
+    private void postInfoToElastic() throws IOException {
         List<Apps> appsList = dataInf.getAllApplications();
         List<StackTrace> stackTraceList = dataInf.getAllStackTraces();
         IndexResponse response;
         JsonApps app;
         JsonStackTrace stackTrace;
 
-
         for (int i = 0; i < appsList.size(); i++) {
             app = new JsonApps(appsList.get(i));
+
+            for (Integer index : app.getStackTraceId()) {
+                for (StackTrace item : stackTraceList) {
+                    if (item.getStackTraceId() == index){
+                        app.addStackTrace(item.getStackTrace());
+                    }
+                }
+            }
+
             response = client.prepareIndex("applications", "apps", String.valueOf(app.getAppId())).setSource(jsonBuilder().startObject()
                     .field("application_id", app.getAppId())
                     .field("application_name", app.getAppName())
                     .field("application_stacktrace", app.getStackTraceId())
+                    .field("app_sts", app.getStackTraces())
                     .field("application_ranked_coeff", app.getRankedCoeff())
                     .endObject())
                     .get();
@@ -91,8 +105,6 @@ public class ElasticsearchController {
         }
 
         System.out.println("Data posted.");
-
-
     }
 
     public List<JsonApps> getTopBrokenApps(){
@@ -184,7 +196,6 @@ public class ElasticsearchController {
         for (SearchHit hit : hits) {
             String str = hit.getSourceAsString();
             if ( str != null){
-                //System.out.println(str); check result
                 jstList.add(gson.fromJson(str, JsonStackTrace.class));
             }
         }
@@ -192,7 +203,6 @@ public class ElasticsearchController {
         for (JsonStackTrace item : jstList) {
             for (Integer index : item.getAppsList()) {
                 if (!list.contains(index)){
-                    //System.out.println("index to added = "+ index); check result
                     list.add(index);
                 }
             }
@@ -203,12 +213,11 @@ public class ElasticsearchController {
                     .setQuery(QueryBuilders.termQuery("application_id", index))
                     .execute()
                     .actionGet();
-            //System.out.println("mark1"); check result
+
             SearchHit[] result = response.getHits().getHits();
             for (SearchHit hit : result) {
                 String str = hit.getSourceAsString();
                 if(str != null){
-                    //System.out.println(str); check result
                     returnList.add(gson.fromJson(str, JsonApps.class));
                 }
             }
@@ -217,8 +226,6 @@ public class ElasticsearchController {
 
         return returnList;
     }
-
-
 
 }
 

@@ -10,11 +10,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Top broken applications</title>
+    <title>${pageTitle}</title>
 </head>
 <body>
     <div>
-        <h1>Top broken applications</h1>
+        <h1>${pageTitle}</h1>
         <a href="<c:url value="/logout" />"><button>Logout</button></a>
     </div>
     <br>
@@ -24,6 +24,7 @@
                 <th width="45">ID</th>
                 <th width="45">App name</th>
                 <th width="45">Connected error</th>
+                <th width="1320">Stacktrace</th>
                 <th width="45">Ranked coeff</th>
             </tr>
 
@@ -32,6 +33,11 @@
                 <td>${brokenApps.appId}</td>
                 <td>${brokenApps.appName}</td>
                 <td>${brokenApps.stackTraceId}</td>
+                <td>
+                    <cicl:forEach var="stackTrace" items="${brokenApps.stackTraces}">
+                        ${stackTrace}<hr/>
+                    </cicl:forEach>
+                </td>
                 <td>${brokenApps.rankedCoeff}</td>
                 </tbody>
             </cicl:forEach>

@@ -14,15 +14,17 @@
 </head>
 <body>
     <div>
-       <h1>Search results:</h1>
+        <h1>Search results:</h1>
+        <a href="<c:url value="/logout" />"><button>Logout</button></a>
     </div>
     <br>
     <div>
         <table align="center" border="2" cellpadding="2" width="1500">
             <tr>
                 <th width="45">ID</th>
-                <th width="45">App name</th>
+                <th width="65">App name</th>
                 <th width="45">Connected error</th>
+                <th width="1300">Stacktrace</th>
                 <th width="45">Ranked coeff</th>
             </tr>
 
@@ -31,6 +33,11 @@
                 <td>${searchResults.appId}</td>
                 <td>${searchResults.appName}</td>
                 <td>${searchResults.stackTraceId}</td>
+                <td>
+                    <cicl:forEach var="stackTrace" items="${searchResults.stackTraces}">
+                        ${stackTrace}<hr/>
+                    </cicl:forEach>
+                </td>
                 <td>${searchResults.rankedCoeff}</td>
                 </tbody>
             </cicl:forEach>

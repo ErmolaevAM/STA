@@ -10,11 +10,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Top errors</title>
+    <title>${pageTitle}</title>
 </head>
 <body>
     <div>
-        <h1>Top errors</h1>
+        <h1>${pageTitle}</h1>
         <a href="<c:url value="/logout" />"><button>Logout</button></a>
     </div>
     <br>
